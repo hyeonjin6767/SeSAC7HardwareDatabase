@@ -22,31 +22,38 @@ import SnapKit
  -> 이 3개를 누가 담당하고 있었냐 : ios13까지 UIImagePickerController(시스템UI까지 담당) : ios14부터는 PHPicker(out of precess라는 키워드가 중요!) 가 등장하면서 2,3을 담당 : 1번은 여전히 UIImagePickerController가 담당
  UIImagePickerController는 갤러리에서 사진을 여러장 선택하는 것 불가능 : PHPicker는 여러장 가능
  
+ 
+ // out of precess : "앱에서 접근할 수 없는 상태로 갤러리가 뜬다" : "단순히 사진을 갤러리에서 가져오는 것(읽은 행위)는 권한이 필요가 없다." : 마치 접근 가능한것처럼 보이게 뜨는 것뿐
+ // process : 앱 하나하나가 프로그램이라고 하면 앱을 실행을 시키면 실행시킨 프로그램 공간 자체를 프로세스라고 하는데 : 앱을 실행시키면 프로세스라는 공간이 생김: 이 공간(프로세스)과 갤러리가 띄워지는 것은 별개라는 뜻. 갤러리가 띄워지는 것은 너의 프로세스 권한 밖이다 :갤러리를 띄우고는 있지만 접근권한은 없는 상태 : 갤러리가 띄워지는 것은 별개의 앱이 띄워지는 거라고 봐도 무방. 그래서 개발자가 사진에 접근할 수 없다는걸 아웃오브 프로세스라고 하는 것.
+ 
+ 
+ 
  */
 
 class CameraViewController: UIViewController {
 
     // 담당자를 매니저로 필요
-    let manager = UIImagePickerController()
+    let manager = UIImagePickerController() // 1. 갤러리 관련 요소들을 다 갖고 있는 이미지픽커를 가지고서
     
     let imageview = UIImageView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        manager.delegate = self
+        manager.delegate = self // 3. 프로토콜 연결
         
     }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        
-        manager.sourceType = .photoLibrary
+        // 2. sourceType의 정의 , 이미지픽커를 어떤 방식으로 사용을 할지 결정
+        manager.sourceType = .photoLibrary // .camera로 해서 실기계에서는 촬영 가능
         manager.allowsEditing = true // 시스템에서 지원해주는 이미지 선택시 편집이 가능하게
         
         
         // 갤러리 화면을 띄우는 것도 프레젠트 사용
-        present(manager, animated: true) // 권한을 물어보지도 않았는데 시작하자마자 갤러리를 띄워주는 게 맞는지...? : 사실상 눈에 보이는 것뿐이지 접근가능한 상태가 아직 아님!
+        present(manager, animated: true) // 권한을 물어보지도 않았는데 시작하자마자 갤러리를 띄워주는 게 맞는지...? : 사실상 눈에 보이는 것뿐이지 접근가능한 상태가 아직 아님! : out of precess
         
         view.addSubview(imageview)
         imageview.snp.makeConstraints { make in
@@ -65,7 +72,8 @@ extension CameraViewController: UIImagePickerControllerDelegate, UINavigationCon
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         print(#function)
         
-        let image = info[.editedImage] as? UIImage // .originalImage는 갤러리에 있는 사진 : 편집 옵션이 있는 경우: .editedImage로 써야 편집한 사진도 갤러리에 저장이 됨
+        let image = info[.editedImage] as? UIImage // .originalImage는 갤러리에 있는 사진 : 편집 옵션이 있는 경우: .editedImage로 써야 편집한 사진도 갤러리에 저장이 됨(위에 manager.allowsEditing = true를 한 경우)
+        
         if let image = image {
             print("이미지 있음")
             // 있으면 이미지 뷰에 보여줘

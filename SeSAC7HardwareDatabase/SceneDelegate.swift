@@ -18,7 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let scene = (scene as? UIWindowScene) else { return }
         
-        let nav = UINavigationController(rootViewController: LocationViewController()) // 네비게이션 컨트롤러를 임베디드 하니까 ..
+        let nav = UINavigationController(rootViewController: SimpleTableViewController()) // 네비게이션 컨트롤러를 임베디드 하니까 ..
         
         window = UIWindow(windowScene: scene)
         window?.rootViewController = nav
